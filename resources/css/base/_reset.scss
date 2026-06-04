@@ -1,0 +1,63 @@
+// ==========================================================================
+// RESET (Обнуление браузерных стилей)
+// ==========================================================================
+
+// 1. Убираем внешние и внутренние отступы у всех элементов
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; // Padding не раздувает ширину элемента
+}
+
+// 2. Улучшаем плавность отрисовки и высоту страницы
+html {
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%; // Для корректного шрифта на iOS
+}
+
+body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    line-height: $lh-base; // Используем переменную из _variables.scss
+}
+
+// 3. Работа с медиа-контентом
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}
+
+// 4. Сброс для форм и интерактивных элементов
+input,
+button,
+textarea,
+select {
+    font: inherit; // Наследуют шрифт от родителя
+    color: inherit;
+    background: none;
+    border: none;
+}
+
+button {
+    cursor: pointer;
+}
+
+// 5. Убираем стандартные маркеры списков
+ul,
+ol {
+    list-style: none;
+}
+
+// 6. Сброс ссылок
+a {
+    text-decoration: none;
+    color: inherit;
+}

@@ -1,0 +1,13 @@
+parameters:
+    level: 8
+    paths:
+        - app
+    bootstrapFiles:
+        - vendor/autoload.php
+    ignoreErrors:
+        - '#Call to an undefined static method#'
+        - '#Access to an undefined property#'
+        - '#does not specify its types#'
+        - '#no value type specified in iterable type#'
+        - '#Call to an undefined method Illuminate\\Contracts\\Auth\\Factory::user\(\)#'
+        - '#Unable to resolve the template type#'

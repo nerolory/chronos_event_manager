@@ -1,0 +1,45 @@
+{
+    "$schema": "https://www.schemastore.org/package.json",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "lint:php": "docker exec chronos_app vendor/bin/phpcs app",
+        "lint:php:fix": "docker exec chronos_app vendor/bin/phpcbf app",
+        "lint:php-cs-fixer": "docker exec chronos_app vendor/bin/php-cs-fixer fix app --dry-run --diff",
+        "lint:php-cs-fixer:fix": "docker exec chronos_app vendor/bin/php-cs-fixer fix app",
+        "lint:phpmd": "docker exec chronos_app vendor/bin/phpmd app text phpmd.xml",
+        "lint:phpstan": "docker exec chronos_app vendor/bin/phpstan analyse app --level=8 --memory-limit=512M",
+        "lint:phpunit": "docker exec chronos_app vendor/bin/phpunit",
+        "lint:js": "eslint packages/chronos/event-core/resources/js --ext .js,.vue",
+        "lint:js:fix": "eslint packages/chronos/event-core/resources/js --ext .js,.vue --fix",
+        "lint:css": "stylelint packages/chronos/event-core/resources/js/**/*.{css,scss,vue}",
+        "lint:css:fix": "stylelint packages/chronos/event-core/resources/js/**/*.{css,scss,vue} --fix",
+        "lint:all": "npm run lint:php && npm run lint:php-cs-fixer && npm run lint:phpmd && npm run lint:phpstan && npm run lint:js && npm run lint:css"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.0",
+        "axios": "^1.11.0",
+        "concurrently": "^9.0.1",
+        "eslint": "^9.0.0",
+        "eslint-plugin-vue": "^9.0.0",
+        "laravel-vite-plugin": "^2.0.0",
+        "postcss-html": "^1.8.1",
+        "sass": "^1.97.3",
+        "sass-embedded": "^1.97.3",
+        "stylelint": "^16.0.0",
+        "stylelint-config-standard-scss": "^13.0.0",
+        "tailwindcss": "^4.0.0",
+        "vite": "^7.0.7"
+    },
+    "dependencies": {
+        "@vitejs/plugin-vue": "^6.0.4",
+        "pinia": "^3.0.4",
+        "vue": "^3.5.29"
+    },
+    "optionalDependencies": {
+        "@esbuild/linux-x64": "^0.27.3",
+        "@rollup/rollup-linux-x64-gnu": "^4.59.0"
+    }
+}

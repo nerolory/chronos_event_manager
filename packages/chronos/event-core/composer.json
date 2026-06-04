@@ -1,0 +1,29 @@
+{
+    "name": "chronos/event-core",
+    "description": "Core event management and calendar logic for Chronos-Dial",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Chronos\\EventCore\\": "src/",
+            "Chronos\\EventCore\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Chronos\\EventCore\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Chronos\\EventCore\\Providers\\EventServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "illuminate/support": "^11.0|^12.0",
+        "rlanvin/php-rrule": "^2.6"
+    }
+}

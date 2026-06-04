@@ -1,0 +1,144 @@
+// ==========================================================================
+// BLOCK: Dashboard (Личный кабинет)
+// ==========================================================================
+
+.dashboard {
+    padding: ($space-unit * 8) 0;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: $space-unit * 6;
+    }
+
+    &__title {
+        @include text-style($fs-2xl, $fw-bold, $lh-tight);
+        color: $clr-text-main;
+    }
+
+    &__user-info {
+        display: flex;
+        align-items: center;
+    }
+
+    &__username {
+        @include text-style($fs-base, $fw-medium);
+        color: $clr-text-main;
+    }
+
+    &__layout {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: $space-unit * 8;
+        align-items: start;
+
+        @include mq(md) {
+            // На планшетах можно менять сетку, если нужно
+        }
+    }
+
+    &__sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: $space-unit * 4;
+    }
+
+    &__content {
+        background: $clr-white;
+        border-radius: $radius-lg;
+        border: 1px solid $clr-border;
+        box-shadow: $shadow-md;
+        overflow: hidden;
+    }
+
+    // Календарная сетка
+    &__calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    &__weekday {
+        padding: $space-unit * 3;
+        text-align: center;
+        @include text-style($fs-xs, $fw-bold);
+        color: $clr-text-muted;
+        background: $clr-bg;
+        border-bottom: 1px solid $clr-border;
+        border-right: 1px solid $clr-border;
+        &:last-child { border-right: none; }
+    }
+
+    &__day {
+        min-height: 120px;
+        padding: $space-unit * 2;
+        border-bottom: 1px solid $clr-border;
+        border-right: 1px solid $clr-border;
+        background: $clr-white;
+
+        &:nth-child(7n) { border-right: none; }
+
+        &--today {
+            background-color: rgba($clr-primary, 0.03);
+            .dashboard__day-number {
+                display: inline-block;
+                background: $clr-primary;
+                color: $clr-white;
+                padding: 2px 8px;
+                border-radius: $radius-sm;
+                font-weight: $fw-bold;
+            }
+        }
+    }
+
+    &__day-number {
+        @include text-style($fs-sm, $fw-medium);
+        color: $clr-text-muted;
+    }
+}
+
+// Карточки статистики в сайдбаре
+.stats-card {
+    background: $clr-white;
+    padding: $space-unit * 5;
+    border-radius: $radius-md;
+    border: 1px solid $clr-border;
+    box-shadow: $shadow-sm;
+
+    &__label {
+        display: block; // ИСПРАВЛЕНИЕ: переносит значение на новую строку
+        margin-bottom: $space-unit;
+        @include text-style($fs-xs, $fw-semibold);
+        color: $clr-text-light;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__value {
+        @include text-style($fs-xl, $fw-bold);
+        color: $clr-primary;
+    }
+}
+
+// Специфическая кнопка выхода/настроек (из Blade)
+.btn-logout-icon {
+    display: flex;
+    align-items: center;
+    padding: $space-unit * 2;
+    border-radius: $radius-md;
+    background: $clr-bg;
+    color: $clr-text-muted;
+    border: 1px solid transparent;
+    @include interactive-state;
+
+    img {
+        width: 18px;
+        height: 18px;
+    }
+
+    &:hover {
+        background: $clr-border-light;
+        color: $clr-error;
+        border-color: rgba($clr-error, 0.2);
+    }
+}

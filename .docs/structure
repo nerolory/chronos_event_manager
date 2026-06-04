@@ -1,0 +1,49 @@
+calendar-project/
+├── packages/                       # ЛОКАЛЬНЫЕ ПАКЕТЫ
+│   └── chronos/
+│       └── event-core/             # НАШ ПАКЕТ (Модуль)
+│           ├── src/
+│           │   ├── Http/
+│           │   │   ├── Controllers/
+│           │   │   └── Resources/   # + Добавлено: EventOccurrenceResource.php [cite: 2]
+│           │   ├── Repositories/   # + Добавлено: EventRepository.php [cite: 2]
+│           │   ├── Services/       # EventService.php и EventOccurrenceService.php [cite: 2]
+│           │   └── Models/         # Event.php (UUID) [cite: 3]
+│           │   └── Providers/      # EventServiceProvider [cite: 27]
+│           └── tests/
+│               ├── Unit/           # Тесты Repository и Service [cite: 3]
+│               └── TestCase.php    # Интеграция с Tests\TestCase хоста [cite: 3]
+├── .docker/                        # IaC: Конфигурации среды [cite: 4]
+│   ├── nginx/                          # Дефолтный конфиг сервера [cite: 4]
+│   └── php/                            # PHP 8.3 + PostgreSQL расширения + Redis [cite: 4]
+├── app/                            # ХОСТ-ПРИЛОЖЕНИЕ (Оболочка) [cite: 5]
+│   ├── Http/
+│   │   └── Controllers/
+│   │       ├── Auth/                   # Регистрация с динамическими согласиями [cite: 5]
+│   │       └── DashboardController.php  # Контроллер кабинета [cite: 5]
+│   ├── Models/
+│   │   ├── User.php                    # Расширенная модель (timezone, push_token) [cite: 6]
+│   │   ├── ConsentType.php             # Тот самый «Словарь» (slug, title, is_required) [cite: 6]
+│   │   └── UserConsent.php             # Связующая таблица (log согласий) [cite: 6]
+│   └── Providers/
+├── database/
+│   └── migrations/                     # Миграции пользователей и СЛОВАРЕЙ согласий [cite: 6]
+├── resources/                       # Ресурсы оболочки [cite: 7]
+│   ├── js/                             # Инициализация Vue 3 [cite: 7]
+│   │   ├── Plugins/                    # Плагин Intl или обертка Luxon для Vue [cite: 7]
+│   │   └── app.js [cite: 8]
+│   ├── scss/                           # Глобальный дизайн сайта [cite: 8]
+│   └── views/                          # Blade (layout, auth, dashboard) [cite: 8]
+├── vendor/                             # Директория зависимостей [cite: 9]
+│   └── chronos/                        # НАШ ПАКЕТ (Модуль) [cite: 9]
+│       └── calendar-module/
+│           ├── database/
+│           │   └── migrations/         # Миграции событий (calendar_events, instances) [cite: 9]
+│           ├── resources/
+│           │   ├── js/                 # Vue-компоненты виджета [cite: 10]
+│           │   │   ├── components/     # KineticClock.vue, Calendar.vue [cite: 10]
+│           │   │   └── store/          # Pinia (состояние календаря) [cite: 10]
+│           │   ├── scss/                # Стили пакета (БЭМ, миксины анимаций) [cite: 11]
+│           │   └── views/              # widget.blade.php [cite: 11]
+│           ├── src/                    # PHP Logic [cite: 11]
+│           │   ├── Services/           # RecurrenceEngine.php (расчет дат) [cite: 12]

@@ -1,0 +1,138 @@
+// ==========================================================================
+// GENERIC (Базовые стили оформления)
+// ==========================================================================
+
+body {
+    font-family: $ff-main;
+    background-color: $clr-bg;
+    color: $clr-text-main;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+// Главный контейнер (предотвращает растягивание контента на сверхшироких экранах)
+.container {
+    width: 100%;
+    max-width: $container-width;
+    margin: 0 auto;
+    padding: 0 ($space-unit * 6); // Отступы по бокам 24px
+}
+
+// Стили основной шапки сайта (app.blade.php)
+.main-header {
+    background-color: $clr-white;
+    border-bottom: 1px solid $clr-border;
+    padding: ($space-unit * 4) 0;
+    box-shadow: $shadow-sm;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    
+    &__inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+// Логотип
+.logo {
+    display: flex;
+    align-items: center;
+    gap: $space-unit * 3;
+    text-decoration: none;
+    @include interactive-state;
+
+    &__icon {
+        width: 32px;
+        height: 32px;
+    }
+
+    &__text {
+        @include text-style($fs-lg, $fw-bold, $lh-tight);
+        color: $clr-text-main;
+        
+        span {
+            color: $clr-primary;
+        }
+    }
+}
+
+// Контентная область
+.page-content {
+    padding: ($space-unit * 10) 0;
+    flex: 1;
+}
+
+// Основной подвал сайта
+.main-footer {
+    padding: ($space-unit * 8) 0;
+    background-color: $clr-white;
+    border-top: 1px solid $clr-border;
+    text-align: center;
+    color: $clr-text-light;
+    @include text-style($fs-sm);
+}
+
+// Стили основной шапки сайта (app.blade.php)
+.main-header {
+    background-color: $clr-white;
+    border-bottom: 1px solid $clr-border;
+    padding: ($space-unit * 4) 0;
+    box-shadow: $shadow-sm;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    
+    &__inner {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+}
+
+// Навигация и блок пользователя
+.main-nav {
+    display: flex;
+    align-items: center;
+
+    &__user {
+        display: flex;
+        align-items: center;
+        gap: $space-unit * 4; // Отступ 16px между именем и кнопкой
+    }
+
+    &__username {
+        @include text-style($fs-sm, $fw-semibold);
+        color: $clr-text-main;
+    }
+}
+
+// Утилитарный класс для формы внутри навигации (чтобы не ломала флекс)
+.inline-form {
+    display: flex;
+    align-items: center;
+}
+
+// Логотип (уже есть в твоем файле, просто убедись, что он не конфликтует)
+.logo {
+    display: flex;
+    align-items: center;
+    gap: $space-unit * 3;
+    text-decoration: none;
+    
+    &__text {
+        @include text-style($fs-lg, $fw-bold);
+        color: $clr-text-main;
+        span { color: $clr-primary; }
+    }
+}

@@ -1,0 +1,73 @@
+# НТЗ: Техническая архитектура модуля «Chronos-Dial» (Ревизия 1.8)
+
+## 1. Системный стек и Окружение
+- [cite_start]**Backend:** PHP 8.3 (Strict Types), Laravel 11, PostgreSQL 16. [cite: 30]
+- [cite_start]**Frontend:** Vue 3 (Composition API), Pinia (State Management). [cite: 30]
+- [cite_start]**Time Logic:** Native JS Intl API / Luxon (для реактивности во Vue). [cite: 31]
+- [cite_start]**IaC:** Docker-compose (контейнеры: app, web, db, redis, worker). [cite: 32]
+
+## 2. Структура базы данных (PostgreSQL)
+
+### 2.1. [cite_start]Справочники и Аудит (Хост-приложение) [cite: 33]
+
+#### [cite_start]Таблица `users` (Стандартная Laravel) [cite: 33]
+- [cite_start]Используется дефолтная миграция Laravel без изменений для обеспечения совместимости с ядром фреймворка. [cite: 33]
+
+#### [cite_start]Таблица `user_settings` (Расширение профиля) [cite: 34]
+- [cite_start]`id` (bigserial): PK. [cite: 34]
+- [cite_start]`user_id` (bigint): FK к `users` (onDelete cascade). [cite: 34]
+- `timezone` (string): Часовой пояс пользователя (напр. 'Europe/Moscow'). [cite_start]По умолчанию 'UTC'. [cite: 35]
+- [cite_start]`push_token` (text, nullable): Токен для Web-Push уведомлений. [cite: 35]
+- [cite_start]`timestamps`: Стандартные метки Laravel (created_at, updated_at). [cite: 36]
+
+#### [cite_start]Таблица `consent_types` (Словарь согласий) [cite: 36]
+- [cite_start]`id` (serial): PK. [cite: 36]
+- `slug` (string): Уникальный код (напр. 'personal-data'). [cite_start]**Зачем:** Поиск в коде без привязки к ID. [cite: 37]
+- [cite_start]`title` (string): Название для интерфейса. [cite: 38]
+- [cite_start]`description` (text): Текст согласия или ссылка на документ. [cite: 38]
+- [cite_start]`is_required` (boolean): Обязательность для регистрации. [cite: 39]
+
+#### [cite_start]Таблица `user_consents` (Журнал действий) [cite: 39]
+- [cite_start]`id` (bigserial): PK. [cite: 39]
+- [cite_start]`user_id` (bigint): FK к users. [cite: 39]
+- [cite_start]`consent_type_id` (int): FK к consent_types. [cite: 40]
+- [cite_start]`is_granted` (boolean): Статус согласия (true/false). [cite: 40]
+- [cite_start]`ip_address` (inet): IP-адрес пользователя. [cite: 40]
+- [cite_start]`user_agent` (text): Данные браузера. [cite: 41]
+- [cite_start]`created_at`: Дата фиксации действия (аудит). [cite: 41]
+
+### 2.2. [cite_start]Ядро модуля (Пакет) [cite: 42]
+#### [cite_start]Таблица `calendar_events` [cite: 42]
+- [cite_start]`id` (uuid): PK. [cite: 42]
+- [cite_start]`user_id` (bigint): FK к users. [cite: 42]
+- [cite_start]`category_id` (bigint): FK к категориям внутри пакета. [cite: 43]
+- [cite_start]`title` (string): Заголовок. [cite: 43]
+- [cite_start]`description` (text): Описание. [cite: 43]
+- [cite_start]`color_accent` (string): Hex-код цвета. [cite: 44]
+- [cite_start]`recurrence_rule` (text/string): RRULE строка. [cite: 44]
+- [cite_start]`starts_at` (timestamp): Начало первой итерации. [cite: 44]
+- [cite_start]`ends_at` (timestamp): Окончание первой итерации. [cite: 45]
+- [cite_start]`deleted_at` (timestamp): SoftDeletes. [cite: 45]
+
+#### [cite_start]Таблица `calendar_event_instances` [cite: 45]
+- [cite_start]`id` (bigserial): PK. [cite: 45]
+- [cite_start]`event_id` (uuid): FK к calendar_events. [cite: 46]
+- `start_at` (timestamp): Время начала (Index). [cite_start]**Важно:** Храним в UTC. [cite: 46]
+- [cite_start]`is_completed` (boolean): Статус выполнения. [cite: 47]
+- [cite_start]`reminder_minutes` (integer): Время пред-уведомления. [cite: 47]
+
+## 3. Логика интеграции и Фронтенд
+
+### 3.1. [cite_start]Реактивность и Время [cite: 48]
+- [cite_start]**Server-side:** Все даты в БД хранятся в UTC. [cite: 48]
+- [cite_start]**Client-side:** Преобразование UTC -> Local Time происходит на уровне Vue-компонентов с использованием `Intl.DateTimeFormat` пользователя. [cite: 49]
+- [cite_start]**Kinetic Engine:** Расчет углов поворота стрелок ($\Delta \alpha$) вынесен в изолированный JS-модуль внутри пакета. [cite: 50]
+
+### 3.2. [cite_start]Компоненты и Стили [cite: 51]
+- [cite_start]**Инкапсуляция:** SCSS пакета использует префикс `.chronos-dial-`. [cite: 51]
+- [cite_start]**Динамика:** Форма регистрации на хост-приложении запрашивает `GET /api/consents` для отрисовки актуального списка чекбоксов. [cite: 51]
+
+## [cite_start]4. Качество и Стандарты [cite: 52]
+- [cite_start]**Принципы:** SOLID, DRY, KISS. [cite: 52]
+- [cite_start]**Инфраструктура:** Полная воспроизводимость через `docker-compose up`. [cite: 52]
+- **Тестирование:** Unit-тесты для Repositories и Services пакета, Feature-тесты для Auth и API. [cite_start]Пакетные тесты интегрированы с ядром хоста. [cite: 53]

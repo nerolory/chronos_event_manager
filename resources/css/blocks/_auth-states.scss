@@ -1,0 +1,97 @@
+// ==========================================================================
+// BLOCK: Auth States (Прелоадер и Уведомления)
+// ==========================================================================
+
+// Обертка для позиционирования элементов внутри формы
+.auth-form {
+    position: relative;
+    overflow: hidden;
+
+    &__checkbox-row {
+        display: flex; 
+        align-items: flex-start; 
+        gap: $space-unit * 3;
+        margin-bottom: $space-unit * 3;
+    }
+
+    &__required-mark {
+        color: $clr-error;
+        margin-left: $space-unit;
+    }
+}
+
+// 1. ПРЕЛОАДЕР (блокировка до загрузки данных)
+.auth-form-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba($clr-white, 0.9);
+    z-index: 10;
+    @include flex-center(column);
+    gap: $space-unit * 4;
+
+    &__spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid $clr-border-light;
+        border-top-color: $clr-primary;
+        border-radius: 50%;
+        animation: auth-spin 1s linear infinite;
+    }
+
+    &__text {
+        @include text-style($fs-sm, $fw-medium);
+        color: $clr-text-muted;
+    }
+}
+
+// 2. ПОПАП УВЕДОМЛЕНИЙ (внизу формы)
+.auth-notification {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: $space-unit * 4;
+    @include flex-center(row);
+    justify-content: flex-start;
+    gap: $space-unit * 3;
+    color: $clr-white;
+    z-index: 20;
+
+    &--success {
+        background-color: $clr-success;
+    }
+
+    &--error {
+        background-color: $clr-error;
+    }
+
+    &__icon {
+        @include text-style($fs-lg, $fw-bold);
+        line-height: 1;
+    }
+
+    &__text {
+        @include text-style($fs-sm, $fw-medium);
+    }
+}
+
+// 3. АНИМАЦИИ (Vue Transition)
+.slide-up-enter-active, 
+.slide-up-leave-active {
+    transition: transform 0.3s ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+    transform: translateY(100%);
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+@keyframes auth-spin {
+    to { transform: rotate(360deg); }
+}

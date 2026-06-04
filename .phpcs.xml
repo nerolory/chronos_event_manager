@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<ruleset name="Chronos-Dial">
+    <description>PSR-12 coding standard for Chronos-Dial project</description>
+
+    <rule ref="PSR12"/>
+
+    <file>app</file>
+
+    <exclude-pattern>*/storage/*</exclude-pattern>
+    <exclude-pattern>*/vendor/*</exclude-pattern>
+    <exclude-pattern>*/node_modules/*</exclude-pattern>
+    <exclude-pattern>*/bootstrap/*</exclude-pattern>
+    <exclude-pattern>*/public/*</exclude-pattern>
+
+    <arg name="colors"/>
+    <arg value="sp"/>
+</ruleset>

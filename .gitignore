@@ -1,0 +1,89 @@
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.*
+!.env.example
+.env.backup
+.env.production
+.env.local
+.env.*.local
+
+# IDE and Editor files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+.phpactor.json
+.phpunit.result.cache
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+*.swp
+*.swo
+*~
+
+# Dependency directories
+/node_modules
+/vendor
+/packages/*/node_modules
+
+# Build outputs
+/public/build
+/public/hot
+/public/storage
+/dist
+/build
+/.vite
+/.nuxt
+
+# Cache directories
+/.eslintcache
+/.stylelintcache
+/.sass-cache/
+/.cache
+/storage/*.key
+/storage/pail
+/storage/logs
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+
+# Testing
+/coverage
+/.nyc_output
+/phpunit.result.cache
+/.phpunit.cache
+
+# Lock files (optional - uncomment if you don't want to commit them)
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
+
+# Misc
+/auth.json
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+composer.lock
+*.pid
+*.seed
+*.pid.lock
+.pnpm/
+.yarn/
+pids

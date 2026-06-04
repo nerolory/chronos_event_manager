@@ -1,0 +1,55 @@
+// ==========================================================================
+// VARIABLES (Конфигурация дизайн-системы)
+// ==========================================================================
+
+// --- Colors (Палитра) ---
+$clr-primary:        #4f46e5;
+$clr-primary-hover:  #4338ca;
+$clr-error:          #ef4444;
+$clr-success:        #10b981;
+
+// Фон страницы (уходим от стерильности к мягкому серому)
+$clr-bg:             #f1f5f9; 
+$clr-white:          #ffffff;
+
+$clr-text-main:      #0f172a; 
+$clr-text-muted:     #475569;
+$clr-text-light:     #94a3b8;
+
+$clr-border:         #e2e8f0;
+$clr-border-light:   #f1f5f9;
+
+// --- Typography (Типографика) ---
+$ff-main:           'Inter', system-ui, -apple-system, sans-serif;
+
+// Font Sizes
+$fs-xs:             0.75rem;   // 12px
+$fs-sm:             0.875rem;  // 14px
+$fs-base:           1rem;      // 16px
+$fs-lg:             1.125rem;  // 18px
+$fs-xl:             1.5rem;    // 24px
+$fs-2xl:            1.875rem;  // 30px
+
+// Font Weights
+$fw-normal:         400;
+$fw-medium:         500;
+$fw-semibold:       600;
+$fw-bold:           700;
+
+// Line Heights
+$lh-tight:          1.2;
+$lh-base:           1.5;
+
+// --- Spacing & Layout (Сетка и отступы) ---
+$space-unit:        0.25rem;   // Базовый шаг 4px
+$container-width:   1200px;    // Ограничение по ширине
+
+$radius-sm:         0.25rem;
+$radius-md:         0.5rem;
+$radius-lg:         0.75rem;
+
+// Тень для придания глубины (против "плоского" дизайна)
+$shadow-sm:         0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md:         0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+
+$transition-base:   all 0.2s ease;

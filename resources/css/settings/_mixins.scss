@@ -1,0 +1,70 @@
+// ==========================================================================
+// MIXINS (Инструментарий логики)
+// ==========================================================================
+
+// --- Адаптивность (Media Queries) ---
+// Позволяет писать: @include mq(md) { ... }
+$breakpoints: (
+    'sm': 640px,
+    'md': 768px,
+    'lg': 1024px,
+    'xl': 1280px
+);
+
+@mixin mq($breakpoint) {
+    $width: map-get($breakpoints, $breakpoint);
+    
+    @if $width {
+        @media (min-width: $width) {
+            @content;
+        }
+    } @else {
+        @error "Неизвестный брейкпоинт: #{$breakpoint}.";
+    }
+}
+
+// --- Типографика (Text Styles) ---
+// Использует переменные из _variables.scss
+@mixin text-style($size: $fs-base, $weight: $fw-normal, $lh: $lh-base) {
+    font-size: $size;
+    font-weight: $weight;
+    line-height: $lh;
+}
+
+// --- Инструменты позиционирования ---
+@mixin flex-center($direction: row) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: $direction;
+}
+
+// --- Стилизация интерактивных элементов ---
+// Чтобы не дублировать transition и hover-эффекты
+@mixin interactive-state {
+    transition: $transition-base;
+    cursor: pointer;
+
+    &:active {
+        transform: translateY(1px);
+    }
+
+    &:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+}
+
+// --- Вспомогательные хелперы ---
+@mixin visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}

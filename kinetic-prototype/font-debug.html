@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<!-- 
+  Kinetic Font Editor
+  Автор: А.Борисов / A.Borisov
+  За основу взята идея kinetic watch, но реализация выполнена автором самостоятельно
+-->
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Kinetic Font Editor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0F172A;
+      color: #e2e8f0;
+      font-family: monospace;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    h1 { color: #38BDF8; font-size: 18px; letter-spacing: 2px; }
+
+    /* ── Легенда ── */
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+    .legend-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .legend-label { color: #94a3b8; font-size: 11px; }
+    .legend-key   { color: #38BDF8; font-size: 16px; font-weight: bold; }
+
+    /* ── Циферблат ── */
+    .clock-face {
+      width: 56px; height: 56px;
+      border-radius: 50%;
+      background: #e8e4df;
+      border: 2px solid #d4cfc9;
+      position: relative;
+      overflow: hidden;
+    }
+    .clock-face.inactive {
+      background: #1e293b;
+      border-color: #334155;
+    }
+    .hand {
+      position: absolute;
+      left: 50%; top: 0;
+      width: 4px; height: 50%;
+      background: #3a3530;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(0deg);
+      border-radius: 2px 2px 0 0;
+      transition: transform 0.4s ease;
+    }
+    .clock-face.inactive .hand { background: #94a3b8; }
+    .clock-dot {
+      position: absolute;
+      width: 6px; height: 6px;
+      background: #3a3530;
+      border-radius: 50%;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .clock-face.inactive .clock-dot { background: #94a3b8; }
+
+    /* ── Основная сетка ── */
+    .editor {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+    .digit-selector {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .digit-selector button {
+      background: #1e293b;
+      border: 2px solid #334155;
+      color: #94a3b8;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-family: monospace;
+      transition: all 0.2s;
+    }
+    .digit-selector button.active {
+      border-color: #38BDF8;
+      color: #38BDF8;
+    }
+
+    .grids-row {
+      display: flex;
+      gap: 48px;
+      align-items: flex-start;
+    }
+
+    .grid-section { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .grid-title { color: #94a3b8; font-size: 12px; letter-spacing: 1px; }
+
+    .clock-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 56px);
+      grid-template-rows: repeat(6, 56px);
+      gap: 4px;
+    }
+    .input-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 56px);
+      grid-template-rows: repeat(6, 40px);
+      gap: 4px;
+    }
+    .cell-input {
+      width: 56px; height: 40px;
+      background: #1e293b;
+      border: 2px solid #334155;
+      color: #38BDF8;
+      text-align: center;
+      font-size: 18px;
+      font-family: monospace;
+      font-weight: bold;
+      border-radius: 6px;
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s;
+      caret-color: transparent;
+    }
+    .cell-input:focus { border-color: #38BDF8; }
+    .cell-input.invalid { border-color: #ef4444; color: #ef4444; }
+
+    /* ── Вывод массива ── */
+    .output {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 8px;
+      padding: 16px 24px;
+      font-size: 13px;
+      color: #94a3b8;
+      min-width: 400px;
+    }
+    .output span { color: #38BDF8; }
+  </style>
+</head>
+<body>
+
+<h1>KINETIC FONT EDITOR</h1>
+
+<!-- Легенда состояний -->
+<div class="legend" id="legend"></div>
+
+<div class="editor">
+  <!-- Выбор цифры -->
+  <div class="digit-selector" id="digit-selector"></div>
+
+  <div class="grids-row">
+    <div class="grid-section">
+      <div class="grid-title">PREVIEW (часы)</div>
+      <div class="clock-grid" id="clock-grid"></div>
+    </div>
+    <div class="grid-section">
+      <div class="grid-title">INPUT (буква состояния)</div>
+      <div class="input-grid" id="input-grid"></div>
+    </div>
+  </div>
+
+  <div class="output" id="output"></div>
+</div>
+
+<script>
+// ── Состояния циферблата ──────────────────────────────────────────────────────
+// Ключ: буква. Значение: [часовая°, минутная°]
+// 0° = вверх (12 часов), 90° = вправо (3 часа), 180° = вниз (6 часов), 270° = влево (9 часов)
+const STATES = {
+  'P': { h: 225, m:  45, label: '7:30',  desc: 'парковка' },
+  'A': { h:   0, m:  90, label: '12:15', desc: '↑ → угол верх-право' },
+  'B': { h:   0, m: 180, desc: 'верх + низ │' },
+  'C': { h:   0, m: 270, label: '12:45', desc: '↑ ← угол верх-лево' },
+  'D': { h:  90, m: 180, label: '3:30',  desc: '→ ↓ угол право-низ' },
+  'E': { h: 270, m: 180, label: '9:30',  desc: '← ↓ угол лево-низ' },
+  'F': { h:  90, m: 270, label: '3:45',  desc: '→ ← горизонталь ─' },
+  'G': { h:  90, m:   0, label: '3:00',  desc: '→ ↑ угол право-верх' },
+  'H': { h: 270, m:   0, label: '9:00',  desc: '← ↑ угол лево-верх' },
+  'I': { h: 180, m:  90, label: '6:15',  desc: '↓ → угол низ-право' },
+};
+
+// ── Шрифт: буквы состояний для каждой цифры ──────────────────────────────────
+// Можно редактировать через интерфейс
+const FONT_KEYS = {
+  '0': ['D','F','F','E', 'B','D','E','B', 'B','B','B','B', 'B','B','B','B', 'B','A','C','B', 'A','F','F','C'],
+  '1': ['P','I','E','P', 'D','H','B','P', 'A','E','B','P', 'P','B','B','P', 'D','C','G','E', 'A','F','F','H'],
+  '2': ['D','F','F','E', 'A','F','E','B', 'D','F','C','B', 'B','D','F','C', 'B','A','F','E', 'A','F','F','C'],
+  '3': ['D','F','F','E', 'A','F','E','B', 'D','F','C','B', 'A','F','E','B', 'D','F','C','B', 'A','F','F','C'],
+  '4': ['D','E','D','E', 'B','B','B','B', 'B','A','C','B', 'A','F','E','B', 'P','P','B','B', 'P','P','A','C'],
+  '5': ['D','F','F','E', 'B','D','F','C', 'B','A','F','E', 'A','F','E','B', 'D','F','C','B', 'A','F','F','C'],
+  '6': ['D','F','F','E', 'B','D','F','C', 'B','A','F','E', 'B','D','E','B', 'B','A','C','B', 'A','F','F','C'],
+  '7': ['D','F','F','E', 'A','F','E','B', 'P','P','B','B', 'P','P','B','B', 'P','P','B','B', 'P','P','A','C'],
+  '8': ['D','F','F','E', 'B','D','E','B', 'B','A','C','B', 'B','D','E','B', 'B','A','C','B', 'A','F','F','C'],
+  '9': ['D','F','F','E', 'B','D','E','B', 'B','A','C','B', 'A','F','E','B', 'D','F','C','B', 'A','F','F','C'],
+};
+
+// ── Текущая редактируемая цифра ───────────────────────────────────────────────
+let currentDigit = '0';
+
+// ── Легенда ───────────────────────────────────────────────────────────────────
+const legendEl = document.getElementById('legend');
+for (const [key, state] of Object.entries(STATES)) {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+
+  const face = makeClock(state.h, state.m, false);
+  face.style.width  = '48px';
+  face.style.height = '48px';
+
+  const lk  = document.createElement('div');
+  lk.className = 'legend-key';
+  lk.textContent = key;
+
+  const ld = document.createElement('div');
+  ld.className = 'legend-label';
+  ld.textContent = state.desc || '';
+
+  item.appendChild(face);
+  item.appendChild(lk);
+  item.appendChild(ld);
+  legendEl.appendChild(item);
+}
+
+// ── Выбор цифры ───────────────────────────────────────────────────────────────
+const selectorEl = document.getElementById('digit-selector');
+for (const d of '0123456789') {
+  const btn = document.createElement('button');
+  btn.textContent = d;
+  btn.dataset.digit = d;
+  if (d === currentDigit) btn.classList.add('active');
+  btn.addEventListener('click', () => {
+    currentDigit = d;
+    document.querySelectorAll('.digit-selector button').forEach(b =>
+      b.classList.toggle('active', b.dataset.digit === d)
+    );
+    renderAll();
+  });
+  selectorEl.appendChild(btn);
+}
+
+// ── Создание циферблата ───────────────────────────────────────────────────────
+function makeClock(hDeg, mDeg, inactive) {
+  const face = document.createElement('div');
+  face.className = 'clock-face' + (inactive ? ' inactive' : '');
+
+  const handH = document.createElement('div');
+  handH.className = 'hand';
+  handH.style.transform = `translateX(-50%) rotate(${hDeg}deg)`;
+
+  const handM = document.createElement('div');
+  handM.className = 'hand';
+  handM.style.transform = `translateX(-50%) rotate(${mDeg}deg)`;
+
+  const dot = document.createElement('div');
+  dot.className = 'clock-dot';
+
+  face.appendChild(handH);
+  face.appendChild(handM);
+  face.appendChild(dot);
+  return face;
+}
+
+// ── Рендер ────────────────────────────────────────────────────────────────────
+const clockGridEl = document.getElementById('clock-grid');
+const inputGridEl = document.getElementById('input-grid');
+const outputEl    = document.getElementById('output');
+
+// Создаём DOM один раз
+const clockCells = [];
+const inputCells = [];
+
+for (let i = 0; i < 24; i++) {
+  const face = makeClock(225, 45, true);
+  clockGridEl.appendChild(face);
+  clockCells.push(face);
+
+  const inp = document.createElement('input');
+  inp.className = 'cell-input';
+  inp.maxLength = 1;
+  inp.dataset.idx = i;
+  inp.addEventListener('input', onInput);
+  inp.addEventListener('keydown', onKeyNav);
+  inputGridEl.appendChild(inp);
+  inputCells.push(inp);
+}
+
+function renderAll() {
+  const keys = FONT_KEYS[currentDigit];
+  for (let i = 0; i < 24; i++) {
+    const key = (keys[i] || 'P').toUpperCase();
+    const state = STATES[key] || STATES['P'];
+    const inactive = (key === 'P');
+
+    // Обновляем часы
+    const face = clockCells[i];
+    face.className = 'clock-face' + (inactive ? ' inactive' : '');
+    face.children[0].style.transform = `translateX(-50%) rotate(${state.h}deg)`;
+    face.children[1].style.transform = `translateX(-50%) rotate(${state.m}deg)`;
+
+    // Обновляем инпут
+    const inp = inputCells[i];
+    inp.value = keys[i] || 'P';
+    inp.classList.toggle('invalid', !STATES[key]);
+  }
+  renderOutput();
+}
+
+function renderOutput() {
+  const keys = FONT_KEYS[currentDigit];
+  let rows = [];
+  for (let r = 0; r < 6; r++) {
+    rows.push(keys.slice(r*4, r*4+4).join(','));
+  }
+  outputEl.innerHTML = `<span>'${currentDigit}':</span> [\n  ${rows.join(',\n  ')}\n]`;
+}
+
+function onInput(e) {
+  const inp = e.target;
+  const idx = parseInt(inp.dataset.idx);
+  const val = inp.value.toUpperCase();
+  inp.value = val;
+
+  if (STATES[val]) {
+    FONT_KEYS[currentDigit][idx] = val;
+    inp.classList.remove('invalid');
+  } else {
+    inp.classList.add('invalid');
+  }
+
+  // Обновляем только этот циферблат
+  const state = STATES[val] || STATES['P'];
+  const inactive = (val === 'P' || !STATES[val]);
+  const face = clockCells[idx];
+  face.className = 'clock-face' + (inactive ? ' inactive' : '');
+  face.children[0].style.transform = `translateX(-50%) rotate(${state.h}deg)`;
+  face.children[1].style.transform = `translateX(-50%) rotate(${state.m}deg)`;
+
+  renderOutput();
+
+  // Переход к следующей ячейке
+  if (STATES[val] && idx < 23) {
+    inputCells[idx + 1].focus();
+    inputCells[idx + 1].select();
+  }
+}
+
+function onKeyNav(e) {
+  const idx = parseInt(e.target.dataset.idx);
+  if (e.key === 'ArrowRight' && idx < 23) { inputCells[idx+1].focus(); e.preventDefault(); }
+  if (e.key === 'ArrowLeft'  && idx > 0)  { inputCells[idx-1].focus(); e.preventDefault(); }
+  if (e.key === 'ArrowDown'  && idx < 20) { inputCells[idx+4].focus(); e.preventDefault(); }
+  if (e.key === 'ArrowUp'    && idx >= 4) { inputCells[idx-4].focus(); e.preventDefault(); }
+}
+
+renderAll();
+</script>
+</body>
+</html>

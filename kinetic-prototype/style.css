@@ -1,0 +1,225 @@
+/*
+ * Kinetic Engine — Prototype
+ * Автор: А.Борисов / A.Borisov
+ * За основу взята идея kinetic watch, но реализация выполнена автором самостоятельно
+ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --clock-size: 48px;
+  --clock-gap: 3px;
+  --clock-bg: #e8e4df;
+  --clock-border: #d4cfc9;
+  --hand-color: #3a3530;
+  --hand-width: 4px;
+  --inactive-color: #c8c3be;
+  --border-clock-bg: #1e293b;
+  --border-clock-border: #334155;
+  --border-hand-color: #94a3b8;
+  --accent: #38BDF8;
+  --bg: #0F172A;
+}
+
+body {
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  font-family: 'Roboto', sans-serif;
+}
+
+.kinetic-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ─── Сетка 28×8 ─── */
+.kinetic-grid {
+  display: grid;
+  grid-template-columns: repeat(28, var(--clock-size));
+  grid-template-rows: repeat(8, var(--clock-size));
+  gap: var(--clock-gap);
+}
+
+/* ─── Одна ячейка-циферблат ─── */
+.kc {
+  width: var(--clock-size);
+  height: var(--clock-size);
+  border-radius: 50%;
+  background: var(--clock-bg);
+  border: 1px solid var(--clock-border);
+  position: relative;
+  overflow: hidden;
+  /* Мягкое светлое свечение для активных ячеек */
+  transition: box-shadow 0.4s ease;
+}
+
+.kc.active {
+  box-shadow: 0 0 0 1.5px var(--accent);
+}
+
+/* ─── Бордерные часы (тёмные) ─── */
+.kc.border-clock {
+  background: var(--border-clock-bg);
+  border-color: var(--border-clock-border);
+}
+
+.kc.border-clock .kc__hand {
+  background: var(--border-hand-color);
+}
+
+.kc.border-clock::after {
+  background: var(--border-clock-bg);
+  border-color: var(--border-hand-color);
+}
+
+/* ─── Стрелки ─── */
+/*
+ * Модель: стрелка — линия от центра до края круга.
+ * height = 50% — ровно до края.
+ * transform-origin: top center — вращаем из центра ячейки.
+ * Стрелка расположена от центра ВВЕРХ (top:0, translateX(-50%)).
+ * rotate(0deg)   → стрелка смотрит вверх   (12 часов)
+ * rotate(90deg)  → смотрит вправо           (3 часа)
+ * rotate(180deg) → смотрит вниз             (6 часов)
+ * rotate(270deg) → смотрит влево            (9 часов)
+ */
+.kc__hand {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: var(--hand-width);
+  height: 50%;
+  transform-origin: bottom center;    /* ось вращения — центр ячейки */
+  transform: translateX(-50%) rotate(0deg);
+  border-radius: var(--hand-width) var(--hand-width) 0 0;
+  background: var(--hand-color);
+  will-change: transform;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+}
+
+/* Обе стрелки одинаковые — нет разницы часовая/минутная по длине */
+.kc__hand--h,
+.kc__hand--m {
+  height: 50%;
+}
+
+/* Неактивные ячейки — стрелки светлее */
+.kc.inactive .kc__hand {
+  background: var(--inactive-color);
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.kc.border-clock.inactive .kc__hand {
+  background: var(--border-hand-color);
+}
+
+/* Центральная точка поверх стрелок */
+.kc::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: var(--clock-bg);
+  border: 1.5px solid var(--hand-color);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.kc.inactive::after {
+  border-color: var(--inactive-color);
+}
+
+/* ─── Панель часовых поясов ─── */
+.tz-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  max-width: calc(28 * var(--clock-size) + 27 * var(--clock-gap));
+}
+
+.tz-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 8px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  transition: border-color 0.2s, background 0.2s;
+  user-select: none;
+}
+
+.tz-btn:hover {
+  background: rgba(56, 189, 248, 0.07);
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.tz-btn.active {
+  border-color: var(--accent);
+  background: rgba(56, 189, 248, 0.12);
+}
+
+.tz-clock {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--clock-bg);
+  border: 1.5px solid var(--clock-border);
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.tz-clock .kc__hand {
+  width: 2px;
+  height: 50%;
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.tz-clock::after {
+  content: '';
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: var(--clock-bg);
+  border: 1.5px solid var(--hand-color);
+  border-radius: 50%;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+}
+
+.tz-label {
+  font-family: monospace;
+  font-size: 14px;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.tz-btn.active .tz-label {
+  color: var(--accent);
+}
+
+/* ─── Debug панель ─── */
+.kinetic-debug {
+  color: #64748b;
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  font-family: monospace;
+}

@@ -1,0 +1,97 @@
+// ==========================================================================
+// BLOCK: Auth Form (Вход и Регистрация)
+// ==========================================================================
+
+.auth-form {
+    background: $clr-white;
+    padding: $space-unit * 10;
+    border-radius: $radius-lg;
+    box-shadow: $shadow-md;
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+
+    &__title {
+        @include text-style($fs-xl, $fw-bold, $lh-tight);
+        color: $clr-text-main;
+        margin-bottom: $space-unit * 6;
+        text-align: center;
+    }
+
+    &__group {
+        margin-bottom: $space-unit * 4;
+    }
+
+    &__label {
+        display: block;
+        @include text-style($fs-sm, $fw-medium);
+        color: $clr-text-muted;
+        margin-bottom: $space-unit * 2;
+    }
+
+    &__input {
+        width: 100%;
+        padding: $space-unit * 3;
+        border: 1px solid $clr-border;
+        border-radius: $radius-md;
+        transition: $transition-base;
+        font-family: inherit;
+
+        &:focus {
+            outline: none;
+            border-color: $clr-primary;
+            box-shadow: 0 0 0 3px rgba($clr-primary, 0.1);
+        }
+
+        &--error {
+            border-color: $clr-error;
+            background-color: rgba($clr-error, 0.02);
+        }
+    }
+
+    &__submit {
+        width: 100%;
+        padding: $space-unit * 3;
+        background-color: $clr-primary;
+        color: $clr-white;
+        border-radius: $radius-md;
+        @include text-style($fs-base, $fw-bold);
+        @include interactive-state;
+        margin-top: $space-unit * 2;
+
+        &:hover {
+            background-color: $clr-primary-hover;
+        }
+    }
+
+    &__error-message {
+        color: $clr-error;
+        font-size: $fs-xs;
+        margin-top: $space-unit;
+        display: block;
+    }
+
+    &__footer {
+        margin-top: $space-unit * 6;
+        display: flex;
+        flex-direction: column;
+        gap: $space-unit * 2;
+        align-items: center;
+    }
+
+    &__link {
+        color: $clr-primary;
+        font-size: $fs-sm;
+        @include interactive-state;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+
+        &--secondary {
+            color: $clr-text-light;
+            font-size: $fs-xs;
+        }
+    }
+}
